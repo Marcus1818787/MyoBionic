@@ -1,4 +1,7 @@
+from calendar import c
 from gpiozero import Servo
+import Adafruit_GPIO.SPI as SPI
+import Adafruit_MCP3008
 from time import sleep
 import time
 
@@ -11,13 +14,21 @@ index = Servo(20)
 middle = Servo(16)
 ring_little = Servo(12)
 servo_delay = 0.7
+threshold = 130
+
+CLK = 4
+MISO = 17
+MOSI = 27
+CS = 22
+mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
 class Hand():
     def __init__(self):
-        # Create a dictionary of servos for referencing, the current state of each servo
-        # and the servo state for each grip
+        # finger_servo indexes each servo to a number (0-3)
         self.finger_servo = {0:thumb, 1:index, 2:middle, 3:ring_little}
+        # current_state indexes whether each servo is relaxed(0) or contracted(1)
         self.current_state = {0:0, 1:0, 2:0, 3:0}
+        # grip_pattern indexes the state of each servo (thumb - little) required to achieve patterns 0 - 6
         self.grip_pattern = {0:[1,1,1,1], 1:[0,1,1,1], 2:[1,0,1,1],
                              3:[1,0,0,1], 4:[1,1,0,0], 5:[1,0,0,0], 6:[0,0,0,0]}
 
@@ -32,11 +43,16 @@ class Hand():
                 self.moveFinger(self.finger_servo[finger], 0)
 
     def moveFinger(self, finger, open_close):
+        limit_reach = False
         # This opens the finger
         if open_close == 0:
-            finger.max()
-            sleep(servo_delay)
-            finger.mid()
+            while limit_reach == False:
+                resistor_value = mcp.read_adc()
+                if resistor_value > threshold:
+                    finger.mid()
+                    limit_reach = True
+                else:
+                    finger.max()
         else:
             finger.min()
             sleep(servo_delay)
