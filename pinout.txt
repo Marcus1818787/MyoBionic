@@ -1,7 +1,7 @@
 ADC OUTPUT:
 GPIO 4 = CLK
-GPIO 17 = Dout
-GPIO 27 = Din
+GPIO 17 = MISO/Dout
+GPIO 27 = MOSI/Din
 GPIO 22 = CS/SHDN
 
 Servo 'Lock' Switch:

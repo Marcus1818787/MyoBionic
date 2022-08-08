@@ -1,9 +1,7 @@
-from calendar import c
 from gpiozero import Servo
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 from time import sleep
-import time
 
 import joblib
 import numpy as np
