@@ -1,0 +1,20 @@
+ADC OUTPUT:
+GPIO 4 = CLK
+GPIO 17 = Dout
+GPIO 27 = Din
+GPIO 22 = CS/SHDN
+
+Servo 'Lock' Switch:
+GPIO 18 = SI - Terminal 2
+
+Servo Control:
+GPIO 12 = Servo 4 Signal
+GPIO 16 = Servo 3 Signal
+GPIO 20 = Servo 2 Signal
+GPIO 21 = Servo 1 Signal
+
+ADC INPUT:
+Servo 1 = Channel 1
+Servo 2 = Channel 2
+Servo 3 = Channel 3
+Servo 4 = Channel 4
