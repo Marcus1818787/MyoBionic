@@ -1,7 +1,8 @@
 from gpiozero import Servo
+from GPIOEmulator.EmulatorGUI import GPIO
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
-from time import sleep
+import time
 
 import joblib
 import numpy as np
@@ -21,6 +22,11 @@ MISO = 17
 MOSI = 27
 CS = 22
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+
+input_switch = 18
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(input_switch, GPIO.IN)
 
 
 class Hand():
@@ -60,7 +66,7 @@ class Hand():
                     finger.max()    # The servo has not met resistance, continue rotating
         else:
             finger.min()
-            sleep(servo_delay)
+            time.sleep(servo_delay)
             finger.mid()
 
 
@@ -68,7 +74,7 @@ class Hand():
         # This for loop will contract, pause, then relax each finger
         for finger in self.finger_servo:
             self.moveFinger(self.finger_servo.get(finger), 1)
-            sleep(2)
+            time.sleep(2)
             self.moveFinger(self.finger_servo.get(finger), 0)
 
 
@@ -79,3 +85,41 @@ class Hand():
             if self.current_state[i] != self.grip_pattern[grip][i]:
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
 
+
+if __name__ == '__main__':
+    hand = Hand()
+    m = Myo(mode=emg_mode.PREPROCESSED)
+    model = joblib.load('TrainedModels/MarcusSVM30.sav')
+
+    def pred_emg(emg, moving, times=[]):
+        np_emg = np.asarray(emg).reshape(1, -1)
+        grip = model.predict(np_emg)
+        #print(grip)
+        values.append(str(grip))
+
+    m.add_emg_handler(pred_emg)
+    m.connect()
+
+    m.add_arm_handler(lambda arm, xdir: print('arm', arm, 'xdir', xdir))
+    m.add_pose_handler(lambda p: print('pose', p))
+    # m.add_imu_handler(lambda quat, acc, gyro: print('quaternion', quat))
+    m.sleep_mode(1)
+    m.set_leds([128, 128, 255], [128, 128, 255])  # purple logo and bar LEDs
+    m.vibrate(1)
+
+    values = []
+    try:
+        start_time = time.time()
+        while True:
+            m.run()
+            if ((time.time() - start_time) > 2):
+                start_time = time.time()
+                if (values.count(max(set(values), key=values.count)) > 100):
+                    grip = max(set(values), key=values.count)
+                    if GPIO.input(input_switch) == False:
+                        hand.changeGrip(grip)
+                        print(grip)
+                values.clear()
+    except KeyboardInterrupt:
+        m.disconnect()
+        quit()

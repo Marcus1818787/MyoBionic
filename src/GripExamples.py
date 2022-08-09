@@ -1,7 +1,3 @@
-from gpiozero import Servo
-import Adafruit_GPIO.SPI as SPI
-import Adafruit_MCP3008
-
 from Main import Hand
 from time import sleep
 
