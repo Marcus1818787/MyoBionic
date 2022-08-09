@@ -7,6 +7,7 @@ import joblib
 import numpy as np
 from pyomyo import Myo, emg_mode
 
+# Initiate variables for servo control
 thumb = Servo(21)
 index = Servo(20)
 middle = Servo(16)
@@ -14,11 +15,13 @@ ring_little = Servo(12)
 servo_delay = 0.7
 threshold = 130
 
+# Initiate variables for the ADC
 CLK = 4
 MISO = 17
 MOSI = 27
 CS = 22
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+
 
 class Hand():
     def __init__(self):
@@ -40,21 +43,34 @@ class Hand():
             if self.current_state[finger] == 1:
                 self.moveFinger(self.finger_servo[finger], 0)
 
-    def moveFinger(self, finger, open_close):
+
+    def moveFinger(self, finger, open_close): # if open_close=1, that signals to close the finger, 0 signals to open it
         limit_reach = False
-        # This opens the finger
-        if open_close == 0:
+        # This closes the finger
+        if open_close == 1:
             while limit_reach == False:
-                resistor_value = mcp.read_adc()
-                if resistor_value > threshold:
-                    finger.mid()
+                # Split the dictionary into a list of keys & values, find the index of the value,
+                #   then reference the key with the same index. This relies on the pinout being correct (servo1-4 = channel0-3)
+                resistor_channel = list(self.finger_servo.keys())[list(self.finger_servo.values()).index(finger)]
+                resistor_value = mcp.read_adc(resistor_channel)
+                if resistor_value > threshold:  # The servo is straining against something, it should stop
+                    finger.mid()    # Set the servo to the nearest default position
                     limit_reach = True
                 else:
-                    finger.max()
+                    finger.max()    # The servo has not met resistance, continue rotating
         else:
             finger.min()
             sleep(servo_delay)
             finger.mid()
+
+
+    def testServos(self):
+        # This for loop will contract, pause, then relax each finger
+        for finger in self.finger_servo:
+            self.moveFinger(self.finger_servo.get(finger), 1)
+            sleep(2)
+            self.moveFinger(self.finger_servo.get(finger), 0)
+
 
     def changeGrip(self, grip):
         # Checks each servos current state against the state needed to achieve grip
