@@ -1,5 +1,8 @@
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    from GPIOEmulator.EmulatorGUI import GPIO
 from gpiozero import Servo
-from GPIOEmulator.EmulatorGUI import GPIO
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 import time
