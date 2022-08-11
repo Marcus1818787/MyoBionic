@@ -55,7 +55,7 @@ class Hand():
 
     def moveFinger(self, finger, open_close): # if open_close=1, that signals to close the finger, 0 signals to open it
         limit_reach = False
-        start_time = time.time
+        start_time = time.time()
         # This closes the finger
         if open_close == 1:
             while limit_reach == False:
@@ -63,12 +63,11 @@ class Hand():
                 #   then reference the key with the same index. This relies on the pinout being correct (servo1-4 = channel0-3)
                 resistor_channel = list(self.finger_servo.keys())[list(self.finger_servo.values()).index(finger)]
                 resistor_value = mcp.read_adc(resistor_channel)
-                if ((time.time-start_time)>1):
-                    if resistor_value > threshold:  # The servo is straining against something, it should stop
-                        finger.mid()    # Set the servo to the nearest default position
-                        limit_reach = True
-                    else:
-                        finger.max()    # The servo has not met resistance, continue rotating
+                if (resistor_value > threshold) and ((time.time() - start_time) > 2):  # The servo is straining against something, it should stop
+                    finger.mid()    # Set the servo to the nearest default position
+                    limit_reach = True
+                else:
+                    finger.max()    # The servo has not met resistance, continue rotating
         else:
             finger.min()
             time.sleep(servo_delay)
