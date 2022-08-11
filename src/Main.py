@@ -1,6 +1,6 @@
 try:
     import RPi.GPIO as GPIO
-except ImportError:
+except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
 from gpiozero import Servo
 import Adafruit_GPIO.SPI as SPI
