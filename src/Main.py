@@ -75,6 +75,8 @@ class Hand():
                     #finger.mid()    # Set the servo to the nearest default position
                     limit_reach = True
                     pi.set_servo_pulsewidth(finger, 0)
+                    pi.set_PWM_dutycycle(finger, 0)
+                    pi.set_PWM_frequency(finger, 0 )
                     #finger.stop()
                 else:
                     pi.set_servo_pulsewidth(finger, 2000)
@@ -86,6 +88,8 @@ class Hand():
             pi.set_servo_pulsewidth(finger, 1500)
             #finger.mid()
             pi.set_servo_pulsewidth(finger, 0)
+            pi.set_PWM_dutycycle(finger, 0)
+            pi.set_PWM_frequency(finger, 0 )
             #finger.stop()
 
 
