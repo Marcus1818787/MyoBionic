@@ -2,8 +2,8 @@ try:
     import RPi.GPIO as GPIO
 except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
+from lib2to3.pgen2.token import INDENT
 import pigpio
-from gpiozero import Servo
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 import time
@@ -12,15 +12,19 @@ import joblib
 import numpy as np
 from pyomyo import Myo, emg_mode
 
+pi = pigpio.pi()
+
 # Initiate variables for servo control
 thumb = 21
 index = 20
 middle = 16
 ring_little = 12
 servo_delay = 0.7
-threshold = 130
-
-pi = pigpio.pi()
+threshold = 200
+pi.set_mode(thumb, pigpio.OUTPUT)
+pi.set_mode(index, pigpio.OUTPUT)
+pi.set_mode(middle, pigpio.OUTPUT)
+pi.set_mode(ring_little, pigpio.OUTPUT)
 
 # Initiate variables for the ADC
 CLK = 4
