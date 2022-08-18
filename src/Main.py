@@ -2,6 +2,7 @@ try:
     import RPi.GPIO as GPIO
 except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
+import pigpio
 from gpiozero import Servo
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
@@ -12,12 +13,14 @@ import numpy as np
 from pyomyo import Myo, emg_mode
 
 # Initiate variables for servo control
-thumb = Servo(21)
-index = Servo(20)
-middle = Servo(16)
-ring_little = Servo(12)
+thumb = 21
+index = 20
+middle = 16
+ring_little = 12
 servo_delay = 0.7
 threshold = 130
+
+pi = pigpio.pi()
 
 # Initiate variables for the ADC
 CLK = 4
@@ -64,16 +67,22 @@ class Hand():
                 resistor_channel = list(self.finger_servo.keys())[list(self.finger_servo.values()).index(finger)]
                 resistor_value = mcp.read_adc(resistor_channel)
                 if (resistor_value > threshold) and ((time.time() - start_time) > 2):  # The servo is straining against something, it should stop
-                    finger.mid()    # Set the servo to the nearest default position
+                    pi.set_servo_pulsewidth(finger, 1500)
+                    #finger.mid()    # Set the servo to the nearest default position
                     limit_reach = True
-                    finger.stop()
+                    pi.set_servo_pulsewidth(finger, 0)
+                    #finger.stop()
                 else:
-                    finger.max()    # The servo has not met resistance, continue rotating
+                    pi.set_servo_pulsewidth(finger, 2000)
+                    #finger.max()    # The servo has not met resistance, continue rotating
         else:
-            finger.min()
+            pi.set_servo_pulsewidth(finger, 1000)
+            #finger.min()
             time.sleep(servo_delay)
-            finger.mid()
-            finger.stop()
+            pi.set_servo_pulsewidth(finger, 1500)
+            #finger.mid()
+            pi.set_servo_pulsewidth(finger, 0)
+            #finger.stop()
 
 
     def testServos(self):
