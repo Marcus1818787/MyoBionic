@@ -71,17 +71,17 @@ class Hand():
                     pi.set_servo_pulsewidth(finger, 0)
                     time.sleep(servo_delay)
                     pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
-                    time.sleep(1)
+                    time.sleep(servo_delay)
                     limit_reach = True
                     pi.set_servo_pulsewidth(finger, 0)
                 else:
                     pi.set_servo_pulsewidth(finger, 2000)   # Servo has not met resistance, keep going
         else:
             pi.set_servo_pulsewidth(finger, 1000)   # Uniwnds the servo by one full rotation
-            time.sleep(1)
+            time.sleep(servo_delay)
             pi.set_servo_pulsewidth(finger, 0)
             pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
-            time.sleep(1)
+            time.sleep(servo_delay)
             
 
     def testServos(self):
