@@ -69,9 +69,11 @@ class Hand():
                 resistor_value = mcp.read_adc(resistor_channel)
                 if (resistor_value > threshold) and ((time.time() - start_time) > 2):  # The servo is straining against something, it should stop
                     pi.set_servo_pulsewidth(finger, 0)
+                    time.sleep(servo_delay)
                     pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
                     time.sleep(1)
                     limit_reach = True
+                    pi.set_servo_pulsewidth(finger, 0)
                 else:
                     pi.set_servo_pulsewidth(finger, 2000)   # Servo has not met resistance, keep going
         else:
