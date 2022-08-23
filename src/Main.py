@@ -21,7 +21,7 @@ index = 20
 middle = 16
 ring_little = 12
 servo_delay = 0.7
-threshold = 130
+threshold = 180
 
 # Initiate variables for the ADC
 CLK = 4
@@ -97,6 +97,7 @@ class Hand():
         for i in range(4):
             if self.current_state[i] != self.grip_pattern[grip][i]:
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
+                self.current_state[i] = self.grip_pattern[grip][i]
 
 
 def Manual_Entry(hand):
