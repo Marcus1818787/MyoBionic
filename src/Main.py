@@ -3,6 +3,7 @@ try:
 except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
 #from gpiozero import Servo
+from multiprocessing import current_process
 import pigpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
@@ -98,7 +99,19 @@ class Hand():
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
 
 
+def Manual_Entry(hand):
+    entry = ''
+    available_grips = [str(i) for i in hand.grip_pattern]
+    while entry not in ['q','Q']:
+        entry = input("Enter a number between 0 & 6, enter q to quit: ")
+        if entry not in available_grips:
+            print("Incorrect input, try again")
+        elif entry == 'q':
+            pass
+        else:
+            hand.changeGrip(int(entry))
+
 if __name__ == '__main__':
     hand = Hand()
-    hand.testServos()
+    Manual_Entry(hand)
     
