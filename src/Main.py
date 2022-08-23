@@ -21,7 +21,7 @@ index = 20
 middle = 16
 ring_little = 12
 servo_delay = 0.7
-threshold = 180
+threshold = 200
 
 # Initiate variables for the ADC
 CLK = 4
@@ -68,19 +68,16 @@ class Hand():
                 resistor_channel = list(self.finger_servo.keys())[list(self.finger_servo.values()).index(finger)]
                 resistor_value = mcp.read_adc(resistor_channel)
                 if (resistor_value > threshold) and ((time.time() - start_time) > 2):  # The servo is straining against something, it should stop
-                    pi.set_servo_pulsewidth(finger, 1500)
-                    #finger.mid()    # Set the servo to the nearest default position
+                    pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
+                    time.sleep(servo_delay)
                     limit_reach = True
                     pi.set_servo_pulsewidth(finger, 0)
                 else:
-                    pi.set_servo_pulsewidth(finger, 2000)
-                    #finger.max()    # The servo has not met resistance, continue rotating
+                    pi.set_servo_pulsewidth(finger, 2000)   # Servo has not met resistance, keep going
         else:
-            pi.set_servo_pulsewidth(finger, 1000)
-            #finger.min()
+            pi.set_servo_pulsewidth(finger, 1000)   # Uniwnds the servo by one full rotation
             time.sleep(servo_delay)
             pi.set_servo_pulsewidth(finger, 0)
-            #finger.mid()
 
 
     def testServos(self):
