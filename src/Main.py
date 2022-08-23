@@ -77,6 +77,8 @@ class Hand():
         else:
             pi.set_servo_pulsewidth(finger, 1000)   # Uniwnds the servo by one full rotation
             time.sleep(servo_delay)
+            pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
+            time.sleep(servo_delay)
             pi.set_servo_pulsewidth(finger, 0)
 
 
@@ -102,14 +104,14 @@ def Manual_Entry(hand):
     available_grips = [str(i) for i in hand.grip_pattern]
     while entry not in ['q','Q']:
         entry = input("Enter a number between 0 & 6, enter q to quit: ")
-        if entry not in available_grips:
-            print("Incorrect input, try again")
-        elif entry == 'q':
+        if entry == 'q':
             pass
+        elif entry not in available_grips:
+            print("Incorrect input, try again")
         else:
             hand.changeGrip(int(entry))
 
 if __name__ == '__main__':
     hand = Hand()
-    Manual_Entry(hand)
+    hand.testServos()
     
