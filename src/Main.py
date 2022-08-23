@@ -36,6 +36,7 @@ GPIO.setwarnings(False)
 GPIO.setup(input_switch, GPIO.IN)
 
 
+
 class Hand():
     def __init__(self):
         # finger_servo indexes each servo to a number (0-3)
@@ -88,7 +89,7 @@ class Hand():
         # This for loop will contract, pause, then relax each finger
         for finger in self.finger_servo:
             self.moveFinger(self.finger_servo.get(finger), 1)
-            time.sleep(2)
+            time.sleep(1)
             self.moveFinger(self.finger_servo.get(finger), 0)
 
 
@@ -105,15 +106,20 @@ def Manual_Entry(hand):
     entry = ''
     available_grips = [str(i) for i in hand.grip_pattern]
     while entry not in ['q','Q']:
-        entry = input("Enter a number between 0 & 6, enter q to quit: ")
-        if entry == 'q':
-            pass
-        elif entry not in available_grips:
-            print("Incorrect input, try again")
+        switch_state = GPIO.input(input_switch)
+        if switch_state:
+            entry = input("Enter a number between 0 & 6, enter q to quit: ")
+            if entry == 'q':
+                pass
+            elif entry not in available_grips:
+                print("Incorrect input, try again")
+            else:
+                hand.changeGrip(int(entry))
         else:
-            hand.changeGrip(int(entry))
+            print("Switch is off, ignoring inputs for 2 seconds...")
+            time.sleep(2)
 
 if __name__ == '__main__':
     hand = Hand()
-    hand.testServos()
+    Manual_Entry(hand)
     
