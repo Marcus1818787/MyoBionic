@@ -122,7 +122,7 @@ def Manual_Entry(hand):
 if __name__ == '__main__':
     hand = Hand()
     m = Myo(mode=emg_mode.PREPROCESSED)
-    model = joblib.load('TrainedModels/SVM/MarcusSVM30.sav')
+    model = joblib.load('TrainedModels/MarcusSVM30.sav')
 
     def pred_emg(emg, moving, times=[]):
         np_emg = np.asarray(emg).reshape(1, -1)
