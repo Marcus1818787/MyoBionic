@@ -149,8 +149,9 @@ if __name__ == '__main__':
                 start_time = time.time()
                 switch_state = GPIO.input(input_switch)
                 if switch_state and (values.count(max(set(values), key=values.count)) > 100):
-                    new_grip = max(set(values), key=values.count)
+                    new_grip = max(set(values), key=values.count)[0]
                     print(new_grip)
+                    hand.changeGrip()
                     values.clear()
     except KeyboardInterrupt:
         m.disconnect()
