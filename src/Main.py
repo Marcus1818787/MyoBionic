@@ -151,7 +151,7 @@ if __name__ == '__main__':
                 if switch_state and (values.count(max(set(values), key=values.count)) > 100):
                     new_grip = max(set(values), key=values.count)[0]
                     print(new_grip)
-                    hand.changeGrip()
+                    hand.changeGrip(new_grip)
                     values.clear()
     except KeyboardInterrupt:
         m.disconnect()
