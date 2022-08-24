@@ -121,5 +121,38 @@ def Manual_Entry(hand):
 
 if __name__ == '__main__':
     hand = Hand()
-    Manual_Entry(hand)
+    m = Myo(mode=emg_mode.PREPROCESSED)
+    model = joblib.load('TrainedModels/SVM/MarcusSVM30.sav')
+
+    def pred_emg(emg, moving, times=[]):
+        np_emg = np.asarray(emg).reshape(1, -1)
+        grip = model.predict(np_emg)
+        #print(grip)
+        values.append(str(grip))
+
+    m.add_emg_handler(pred_emg)
+    m.connect()
+
+    m.add_arm_handler(lambda arm, xdir: print('arm', arm, 'xdir', xdir))
+    m.add_pose_handler(lambda p: print('pose', p))
+    # m.add_imu_handler(lambda quat, acc, gyro: print('quaternion', quat))
+    m.sleep_mode(1)
+    m.set_leds([128, 128, 255], [128, 128, 255])  # purple logo and bar LEDs
+    m.vibrate(1)
+
+    values = []
+    try:
+        start_time = time.time()
+        while True:
+            m.run()
+            if ((time.time() - start_time) > 2):
+                start_time = time.time()
+                switch_state = GPIO.input(input_switch)
+                if switch_state and (values.count(max(set(values), key=values.count)) > 100):
+                    new_grip = max(set(values), key=values.count)
+                    print(new_grip)
+                    values.clear()
+    except KeyboardInterrupt:
+        m.disconnect()
+        quit()
     
