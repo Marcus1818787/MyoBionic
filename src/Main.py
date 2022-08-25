@@ -151,6 +151,7 @@ if __name__ == '__main__':
         while True:
             m.run()
             print(time.time() - start_time)
+            print(len(values))
             if ((time.time() - start_time) > 2):
                 print("Two seconds elapsed")
                 if (values.count(max(set(values), key=values.count, default=0)) > 100):
@@ -162,7 +163,6 @@ if __name__ == '__main__':
                     print("Values cleared")
                 start_time = time.time()
                 print("Time reset")
-                values.clear()
     except KeyboardInterrupt:
         m.disconnect()
         quit()
