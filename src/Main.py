@@ -103,6 +103,9 @@ class Hand():
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
                 print("Servo", self.finger_servo[i], "moved")
                 self.current_state[i] = self.grip_pattern[grip][i]
+                print("Servo state changed")
+            else:
+                print("Servo not moved")
 
 
 def Manual_Entry(hand):
@@ -153,7 +156,9 @@ if __name__ == '__main__':
                     new_grip = int(max(set(values), key=values.count)[1])
                     print(new_grip)
                     hand.changeGrip(new_grip)
+                    print("Grip changed")
                     values.clear()
+                    print("Values cleared")
     except KeyboardInterrupt:
         m.disconnect()
         quit()
