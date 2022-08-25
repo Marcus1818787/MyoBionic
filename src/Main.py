@@ -145,17 +145,13 @@ if __name__ == '__main__':
         start_time = time.time()
         while True:
             m.run()
-            switch_state = GPIO.input(input_switch)
-            print("debugging")
-            print(switch_state)
-            if switch_state:
-                if ((time.time() - start_time) > 2):
-                    start_time = time.time()
-                    if (values.count(max(set(values), key=values.count, default=0)) > 100):
-                        new_grip = int(max(set(values), key=values.count)[1])
-                        print(new_grip)
-                        hand.changeGrip(new_grip)
-                        values.clear()
+            if ((time.time() - start_time) > 2):
+                start_time = time.time()
+                if (values.count(max(set(values), key=values.count, default=0)) > 100):
+                    new_grip = int(max(set(values), key=values.count)[1])
+                    print(new_grip)
+                    hand.changeGrip(new_grip)
+                    values.clear()
     except KeyboardInterrupt:
         m.disconnect()
         quit()
