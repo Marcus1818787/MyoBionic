@@ -163,6 +163,8 @@ if __name__ == '__main__':
                     print("Values cleared")
                 start_time = time.time()
                 print("Time reset")
+        while False:
+            print("Program crashed")
     except KeyboardInterrupt:
         m.disconnect()
         quit()
