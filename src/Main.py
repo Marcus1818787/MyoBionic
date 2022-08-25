@@ -146,9 +146,10 @@ if __name__ == '__main__':
     m.vibrate(1)
 
     values = []
+    loop = True
     try:
         start_time = time.time()
-        while True:
+        while loop==True:
             m.run()
             print(time.time() - start_time)
             print(len(values))
@@ -161,10 +162,9 @@ if __name__ == '__main__':
                     print("Grip changed")
                     values.clear()
                     print("Values cleared")
+                    loop=False
                 start_time = time.time()
                 print("Time reset")
-        while False:
-            print("Program crashed")
     except KeyboardInterrupt:
         m.disconnect()
         quit()
