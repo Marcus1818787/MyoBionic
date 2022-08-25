@@ -150,7 +150,9 @@ if __name__ == '__main__':
         start_time = time.time()
         while True:
             m.run()
+            print(time.time() - start_time)
             if ((time.time() - start_time) > 2):
+                print("Two seconds elapsed")
                 if (values.count(max(set(values), key=values.count, default=0)) > 100):
                     new_grip = int(max(set(values), key=values.count)[1])
                     print(new_grip)
