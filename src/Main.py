@@ -75,6 +75,7 @@ class Hand():
                     time.sleep(servo_delay)
                     limit_reach = True
                     pi.set_servo_pulsewidth(finger, 0)
+                    print(finger, "contracted")
                 else:
                     pi.set_servo_pulsewidth(finger, 2000)   # Servo has not met resistance, keep going
         else:
@@ -83,6 +84,7 @@ class Hand():
             pi.set_servo_pulsewidth(finger, 0)
             pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
             time.sleep(servo_delay)
+            print(finger, "relaxed")
             
 
     def testServos(self):
@@ -99,6 +101,7 @@ class Hand():
         for i in range(4):
             if self.current_state[i] != self.grip_pattern[grip][i]:
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
+                print("Servo", self.finger_servo[i], "moved")
                 self.current_state[i] = self.grip_pattern[grip][i]
 
 
@@ -127,7 +130,6 @@ if __name__ == '__main__':
     def pred_emg(emg, moving, times=[]):
         np_emg = np.asarray(emg).reshape(1, -1)
         grip = model.predict(np_emg)
-        #print(grip)
         values.append(str(grip))
 
     m.add_emg_handler(pred_emg)
