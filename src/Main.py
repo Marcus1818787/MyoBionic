@@ -151,7 +151,6 @@ if __name__ == '__main__':
         while True:
             m.run()
             if ((time.time() - start_time) > 2):
-                start_time = time.time()
                 if (values.count(max(set(values), key=values.count, default=0)) > 100):
                     new_grip = int(max(set(values), key=values.count)[1])
                     print(new_grip)
@@ -159,6 +158,8 @@ if __name__ == '__main__':
                     print("Grip changed")
                     values.clear()
                     print("Values cleared")
+                start_time = time.time()
+                print("Time reset")
     except KeyboardInterrupt:
         m.disconnect()
         quit()
