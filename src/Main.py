@@ -146,24 +146,23 @@ if __name__ == '__main__':
     m.vibrate(1)
 
     values = []
-    loop = True
     try:
         start_time = time.time()
-        while loop==True:
+        while True:
+            # All print lines are fro debugging purposes
             m.run()
             print(time.time() - start_time)
-            print(len(values))
-            if ((time.time() - start_time) > 2):
+            print(len(values))  
+            if ((time.time() - start_time) > 2):    # If two seconds has passed since last grip check
                 print("Two seconds elapsed")
-                if (values.count(max(set(values), key=values.count, default=0)) > 100):
-                    new_grip = int(max(set(values), key=values.count)[1])
+                if (values.count(max(set(values), key=values.count, default=0)) > 100): # Finds grip that has occured more than 100 times in last two seconds
+                    new_grip = int(max(set(values), key=values.count)[1])   # Makes modal grip the new grip
                     print(new_grip)
-                    hand.changeGrip(new_grip)
+                    hand.changeGrip(new_grip)   # Moves servos to match new grip
                     print("Grip changed")
-                    values.clear()
+                    values.clear()  # Empties the list of recognised grips to start listening again
                     print("Values cleared")
-                    loop=False
-                start_time = time.time()
+                start_time = time.time()    # Start the 2 second loop again
                 print("Time reset")
     except KeyboardInterrupt:
         m.disconnect()
