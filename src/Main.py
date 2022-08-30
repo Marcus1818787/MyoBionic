@@ -3,7 +3,7 @@ try:
 except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
 #from gpiozero import Servo
-from multiprocessing import current_process
+import multiprocessing
 import pigpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
@@ -152,7 +152,8 @@ if __name__ == '__main__':
     try:
         start_time = time.time()
         while True:
-            m.run()
+            run_myo = multiprocessing.Process(target=m.run())
+            run_myo.start()
             # All prints are for debugging purposes
             if ((time.time() - start_time) > 2):    # If two seconds has passed since last grip check
                 print("Two seconds elapsed")
@@ -167,6 +168,7 @@ if __name__ == '__main__':
                 print("Time reset")
                 gc.collect  # Manually flush RAM
     except KeyboardInterrupt:
+        run_myo.join()
         m.disconnect()
         quit()
     
