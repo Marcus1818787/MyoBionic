@@ -8,6 +8,7 @@ import pigpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 import time
+import gc
 
 import joblib
 import numpy as np
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     try:
         start_time = time.time()
         while True:
-            # All print lines are fro debugging purposes
+            # All print lines are for debugging purposes
             m.run()
             print(time.time() - start_time)
             print(len(values))  
@@ -162,6 +163,7 @@ if __name__ == '__main__':
                     print("Grip changed")
                     values.clear()  # Empties the list of recognised grips to start listening again
                     print("Values cleared")
+                    gc.collect()    # Manually flush the memory
                 start_time = time.time()    # Start the 2 second loop again
                 print("Time reset")
     except KeyboardInterrupt:
