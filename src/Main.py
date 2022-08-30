@@ -3,11 +3,12 @@ try:
 except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
 #from gpiozero import Servo
-from multiprocessing import current_process
+import multiprocessing
 import pigpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 import time
+import gc
 
 import joblib
 import numpy as np
@@ -75,6 +76,7 @@ class Hand():
                     time.sleep(servo_delay)
                     limit_reach = True
                     pi.set_servo_pulsewidth(finger, 0)
+                    print(finger, "contracted")
                 else:
                     pi.set_servo_pulsewidth(finger, 2000)   # Servo has not met resistance, keep going
         else:
@@ -83,6 +85,7 @@ class Hand():
             pi.set_servo_pulsewidth(finger, 0)
             pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
             time.sleep(servo_delay)
+            print(finger, "relaxed")
             
 
     def testServos(self):
@@ -97,9 +100,15 @@ class Hand():
         # Checks each servos current state against the state needed to achieve grip
         # If the state is different, the servo moves to the required state
         for i in range(4):
+            print("Moving finger",i)
             if self.current_state[i] != self.grip_pattern[grip][i]:
+                print("Servo is different")
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
+                print("Servo", self.finger_servo[i], "moved")
                 self.current_state[i] = self.grip_pattern[grip][i]
+                print("Servo state changed")
+            else:
+                print("Servo not moved")
 
 
 def Manual_Entry(hand):
