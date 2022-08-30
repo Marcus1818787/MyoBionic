@@ -149,8 +149,8 @@ if __name__ == '__main__':
     values = []
     try:
         start_time = time.time()
-        m.run()
         while True:
+            m.run()
             # All print lines are for debugging purposes
             if ((time.time() - start_time) > 2):    # If two seconds has passed since last grip check
                 print("Two seconds elapsed")
