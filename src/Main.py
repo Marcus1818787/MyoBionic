@@ -165,6 +165,7 @@ if __name__ == '__main__':
                     print("Values Cleared")
                 start_time = time.time()    # Start the 2 second loop again
                 print("Time reset")
+                gc.collect  # Manually flush RAM
     except KeyboardInterrupt:
         m.disconnect()
         quit()
