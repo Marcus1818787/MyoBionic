@@ -151,7 +151,9 @@ if __name__ == '__main__':
         start_time = time.time()
         while True:
             m.run()
-            # All print lines are for debugging purposes
+            # All prints are for debugging purposes
+            if (((time.time() - start_time)%0.5) == 0):
+                print(time.time() - start_time)
             if ((time.time() - start_time) > 2):    # If two seconds has passed since last grip check
                 print("Two seconds elapsed")
                 if (values.count(max(set(values), key=values.count, default=0)) > 100): # Finds grip that has occured more than 100 times in last two seconds
@@ -163,7 +165,6 @@ if __name__ == '__main__':
                     print("Values Cleared")
                 start_time = time.time()    # Start the 2 second loop again
                 print("Time reset")
-                gc.collect()    # Manually flush the memory
     except KeyboardInterrupt:
         m.disconnect()
         quit()
