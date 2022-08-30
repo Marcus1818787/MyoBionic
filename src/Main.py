@@ -152,8 +152,6 @@ if __name__ == '__main__':
         m.run()
         while True:
             # All print lines are for debugging purposes
-            print(time.time() - start_time)
-            print(len(values))  
             if ((time.time() - start_time) > 2):    # If two seconds has passed since last grip check
                 print("Two seconds elapsed")
                 if (values.count(max(set(values), key=values.count, default=0)) > 100): # Finds grip that has occured more than 100 times in last two seconds
@@ -162,10 +160,10 @@ if __name__ == '__main__':
                     hand.changeGrip(new_grip)   # Moves servos to match new grip
                     print("Grip changed")
                     values.clear()  # Empties the list of recognised grips to start listening again
-                    print("Values cleared")
-                    gc.collect()    # Manually flush the memory
+                    print("Values Cleared")
                 start_time = time.time()    # Start the 2 second loop again
                 print("Time reset")
+                gc.collect()    # Manually flush the memory
     except KeyboardInterrupt:
         m.disconnect()
         quit()
