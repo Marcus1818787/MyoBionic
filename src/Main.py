@@ -100,6 +100,7 @@ class Hand():
         # Checks each servos current state against the state needed to achieve grip
         # If the state is different, the servo moves to the required state
         for i in range(4):
+            print("Moving finger",i)
             if self.current_state[i] != self.grip_pattern[grip][i]:
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
                 print("Servo", self.finger_servo[i], "moved")
