@@ -117,7 +117,7 @@ def Manual_Entry(hand):
     while entry not in ['q','Q']:
         switch_state = GPIO.input(input_switch)
         print(switch_state)
-        if switch_state:
+        if switch_state == 1:
             entry = input("Enter a number between 0 & 6, enter q to quit: ")
             if entry == 'q':
                 pass
