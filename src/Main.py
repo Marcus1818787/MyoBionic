@@ -161,19 +161,15 @@ def EMG_Entry(hand):
     m.vibrate(1)
 
     values = [] # This list will store classified EMG signals to register grip held by user
-    try:
-        start_time = time.time()
-        while True:
-            pdb.set_trace()
-            m.run()
-            if ((time.time() - start_time) > 2):
-                if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
-                    new_grip = int(max(set(values), key=values.count)[1])   # Set the most common grip as the new grip
-                    hand.changeGrip(new_grip)   # Move the servos to replicate the new grip
-                    values.clear()  # Clear the list to start collecting grip values again
-                start_time = time.time()    # Reset 2 second counter
-    except KeyboardInterrupt:
-        m.disconnect()
+    start_time = time.time()
+    while True:
+        m.run()
+        if ((time.time() - start_time) > 2):
+            if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
+                new_grip = int(max(set(values), key=values.count)[1])   # Set the most common grip as the new grip
+                hand.changeGrip(new_grip)   # Move the servos to replicate the new grip
+                values.clear()  # Clear the list to start collecting grip values again
+            start_time = time.time()    # Reset 2 second counter
 
 if __name__ == '__main__':
     hand = Hand()
