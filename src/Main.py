@@ -16,6 +16,7 @@ import gc
 import joblib
 import numpy as np
 from pyomyo import Myo, emg_mode
+import pdb
 
 pi = pigpio.pi()
 
@@ -170,6 +171,7 @@ def EMG_Entry(hand):
         print("Start time set")
         while True:
             print("loop started")
+            pdb.set_trace()
             m.run()
             print("Myo running")
             if ((time.time() - start_time) > 2):
