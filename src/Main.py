@@ -6,6 +6,7 @@ except ModuleNotFoundError:
 import multiprocessing
 from operator import mod
 from select import select
+import traceback
 import pigpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
@@ -37,7 +38,6 @@ input_switch = 18
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(input_switch, GPIO.IN)
-
 
 
 class Hand():
@@ -184,6 +184,7 @@ if __name__ == '__main__':
             Manual_Entry(hand)
         elif (mode in ['2', 'EMG', 'emg']):
             EMG_Entry(hand)
+            print(traceback.print_stack(limit=20))
         elif (mode in ['3', 'Test', 'test', 'Test servos', 'test servos']):
             hand.testServos()
         elif (mode in ['4', 'Cycle', 'cycle', 'Cycle grips', 'Cycle grip examples']):
