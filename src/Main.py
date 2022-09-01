@@ -3,20 +3,14 @@ try:
 except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
 #from gpiozero import Servo
-import multiprocessing
-from operator import mod
-from select import select
-import traceback
 import pigpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
-import time
-import gc
+from Libs.pyomyo import Myo, emg_mode
 
+import time
 import joblib
 import numpy as np
-from pyomyo import Myo, emg_mode
-import pdb
 
 pi = pigpio.pi()
 
@@ -35,6 +29,7 @@ MOSI = 27
 CS = 22
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
+# Initiate variables for input switch
 input_switch = 18
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -43,28 +38,29 @@ GPIO.setup(input_switch, GPIO.IN)
 
 class Hand():
     def __init__(self):
-        # finger_servo indexes each servo to a number (0-3)
-        self.finger_servo = {0:thumb, 1:index, 2:middle, 3:ring_little}
+        # finger_servo indexes each servo to a number
+        self.finger_servo = {0:ring_little, 1:middle, 2:index, 3:thumb}
         # current_state indexes whether each servo is relaxed(0) or contracted(1)
         self.current_state = {0:0, 1:0, 2:0, 3:0}
-        # grip_pattern indexes the state of each servo (thumb - little) required to achieve patterns 0 - 6
-        self.grip_pattern = {0:[1,1,1,1], 1:[0,1,1,1], 2:[1,0,1,1],
-                             3:[1,0,0,1], 4:[1,1,0,0], 5:[1,0,0,0], 6:[0,0,0,0]}
+        # grip_pattern indexes the state of each servo (ascending order) required to achieve grip patterns
+        self.grip_pattern = {0:[1,1,1,1], 1:[1,1,1,0], 2:[1,1,0,1],
+                             3:[1,0,0,1], 4:[0,0,1,1], 5:[0,0,0,1], 6:[0,0,0,0]}
 
         # Attempt to establish if any of the servos are contracted based off values the last time the hand was on
-        boot_contract = open("current_state.txt", 'r')
+        boot_state = open("current_state.txt", 'r')
         for finger in self.current_state:
-            servo_status = boot_contract.readline()
+            servo_status = boot_state.readline()
             # Set current state of finger to the state declared in txt file
             self.current_state[finger] = int(servo_status)
             # If the servo is contracted, relax it
             if self.current_state[finger] == 1:
                 self.moveFinger(self.finger_servo[finger], 0)
+        boot_state.close()
 
 
     def moveFinger(self, finger, open_close): # if open_close=1, that signals to close the finger, 0 signals to open it
         limit_reach = False
-        # This closes the finger
+
         if open_close == 1:
             while limit_reach == False:
                 # Split the dictionary into a list of keys & values, find the index of the value,
@@ -77,9 +73,8 @@ class Hand():
                     time.sleep(servo_delay)
                     pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
                     time.sleep(servo_delay)
-                    limit_reach = True
                     pi.set_servo_pulsewidth(finger, 0)
-                    print(finger, "contracted")
+                    limit_reach = True
                 else:
                     pi.set_servo_pulsewidth(finger, 2000)   # Servo has not met resistance, keep going
         else:
@@ -88,21 +83,15 @@ class Hand():
             pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
             time.sleep(servo_delay)
             pi.set_servo_pulsewidth(finger, 0)
-            print(finger, "relaxed")
             
     def changeGrip(self, grip):
         # Checks each servos current state against the state needed to achieve grip
         # If the state is different, the servo moves to the required state
         for i in range(4):
-            print("Moving finger",i)
             if self.current_state[i] != self.grip_pattern[grip][i]:
-                print("Servo is different")
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
-                print("Servo", self.finger_servo[i], "moved")
                 self.current_state[i] = self.grip_pattern[grip][i]
-                print("Servo state changed")
-            else:
-                print("Servo not moved")
+                # This is where the servo state should be chnaged in the boot_state
 
     def testServos(self):
         # This for loop will contract, pause, then relax each finger
@@ -115,11 +104,6 @@ class Hand():
         for grip in self.grip_pattern:
             self.changeGrip(grip)
             time.sleep(4)
-
-    def stopHand(self):
-        for servo in self.finger_servo:
-            finger = self.finger_servo[servo]
-            pi.set_servo_pulsewidth(finger, 0)
 
 
 def Manual_Entry(hand):
@@ -143,7 +127,7 @@ def Manual_Entry(hand):
 
 def EMG_Entry(hand):
     m = Myo(mode=emg_mode.PREPROCESSED)
-    model = joblib.load('../TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model used
+    model = joblib.load('TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model used
 
     def pred_emg(emg, moving, times=[]):
         np_emg = np.asarray(emg).reshape(1, -1)
@@ -155,7 +139,6 @@ def EMG_Entry(hand):
 
     m.add_arm_handler(lambda arm, xdir: print('arm', arm, 'xdir', xdir))
     m.add_pose_handler(lambda p: print('pose', p))
-    # m.add_imu_handler(lambda quat, acc, gyro: print('quaternion', quat))
     m.sleep_mode(1)
     m.set_leds([128, 128, 255], [128, 128, 255])  # purple logo and bar LEDs
     m.vibrate(1)
@@ -182,7 +165,6 @@ if __name__ == '__main__':
             Manual_Entry(hand)
         elif (mode in ['2', 'EMG', 'emg']):
             EMG_Entry(hand)
-            print(traceback.print_stack(limit=20))
         elif (mode in ['3', 'Test', 'test', 'Test servos', 'test servos']):
             hand.testServos()
         elif (mode in ['4', 'Cycle', 'cycle', 'Cycle grips', 'Cycle grip examples']):
