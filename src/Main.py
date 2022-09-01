@@ -142,14 +142,12 @@ def Manual_Entry(hand):
 
 def EMG_Entry(hand):
     m = Myo(mode=emg_mode.PREPROCESSED)
-    model = joblib.load('TrainedModels/MarcusSVM30.sav')
+    model = joblib.load('../TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model used
 
     def pred_emg(emg, moving, times=[]):
         np_emg = np.asarray(emg).reshape(1, -1)
-        grip = model.predict(np_emg)
-        #print(grip)
-
-        values.append(str(grip))
+        grip = model.predict(np_emg)    # Classify EMG signals according to ML model
+        values.append(str(grip))        # Add this classification to the list to calculate mode later
 
     m.add_emg_handler(pred_emg)
     m.connect()
@@ -161,7 +159,7 @@ def EMG_Entry(hand):
     m.set_leds([128, 128, 255], [128, 128, 255])  # purple logo and bar LEDs
     m.vibrate(1)
 
-    values = []
+    values = [] # This list will store classified EMG signals to register grip held by user
     try:
         start_time = time.time()
         while True:
@@ -194,6 +192,4 @@ if __name__ == '__main__':
             program_run = False
         else:
             print("Incorrect input, please enter the number associated with your choice.")
-    
-
     
