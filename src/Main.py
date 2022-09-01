@@ -4,6 +4,7 @@ except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
 #from gpiozero import Servo
 import multiprocessing
+from operator import mod
 import pigpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
@@ -87,15 +88,6 @@ class Hand():
             time.sleep(servo_delay)
             print(finger, "relaxed")
             
-
-    def testServos(self):
-        # This for loop will contract, pause, then relax each finger
-        for finger in self.finger_servo:
-            self.moveFinger(self.finger_servo.get(finger), 1)
-            time.sleep(1)
-            self.moveFinger(self.finger_servo.get(finger), 0)
-
-
     def changeGrip(self, grip):
         # Checks each servos current state against the state needed to achieve grip
         # If the state is different, the servo moves to the required state
@@ -108,7 +100,19 @@ class Hand():
                 self.current_state[i] = self.grip_pattern[grip][i]
                 print("Servo state changed")
             else:
-                print("Servo not moved")
+                print("Servo not moved")        
+
+    def testServos(self):
+        # This for loop will contract, pause, then relax each finger
+        for finger in self.finger_servo:
+            self.moveFinger(self.finger_servo.get(finger), 1)
+            time.sleep(1)
+            self.moveFinger(self.finger_servo.get(finger), 0)
+
+    def cycleGrips(self):
+        for grip in self.grip_pattern:
+            self.changeGrip(grip)
+            time.sleep(4)
 
 
 def Manual_Entry(hand):
@@ -129,7 +133,61 @@ def Manual_Entry(hand):
             print("Switch is off, ignoring inputs for 2 seconds...")
             time.sleep(2)
 
+
+def EMG_Entry(hand):
+    m = Myo(mode=emg_mode.PREPROCESSED)
+    model = joblib.load('TrainedModels/MarcusSVM30.sav')
+
+    def pred_emg(emg, moving, times=[]):
+        np_emg = np.asarray(emg).reshape(1, -1)
+        grip = model.predict(np_emg)
+        #print(grip)
+
+        values.append(str(grip))
+
+    m.add_emg_handler(pred_emg)
+    m.connect()
+
+    m.add_arm_handler(lambda arm, xdir: print('arm', arm, 'xdir', xdir))
+    m.add_pose_handler(lambda p: print('pose', p))
+    # m.add_imu_handler(lambda quat, acc, gyro: print('quaternion', quat))
+    m.sleep_mode(1)
+    m.set_leds([128, 128, 255], [128, 128, 255])  # purple logo and bar LEDs
+    m.vibrate(1)
+
+    values = []
+    try:
+        start_time = time.time()
+        while True:
+            m.run()
+            if ((time.time() - start_time) > 2):
+                if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
+                    new_grip = int(max(set(values), key=values.count)[1])   # Set the most common grip as the new grip
+                    hand.changeGrip(new_grip)   # Move the servos to replicate the new grip
+                    values.clear()  # Clear the list to start collecting grip values again
+                start_time = time.time()    # Reset 2 second counter
+    except KeyboardInterrupt:
+        m.disconnect()
+
 if __name__ == '__main__':
     hand = Hand()
-    Manual_Entry(hand)
+    program_run = True
+    while program_run:
+        print("Enter the number of the routine you want to run:\n1. Manual keyboard input\n"
+        "2. EMG input\n3. Test servos\n4. Cycle grip examples\n5. Exit program")
+        mode = input("Enter an input option (1 or 2): ")
+        if (mode in ['1', 'Manual', 'manual', 'keyboard', 'Keyboard']):
+            Manual_Entry(hand)
+        elif (mode in ['2', 'EMG', 'emg']):
+            EMG_Entry(hand)
+        elif (mode in ['3', 'Test', 'test', 'Test servos', 'test servos']):
+            hand.testServos()
+        elif (mode in ['4', 'Cycle', 'cycle', 'Cycle grips', 'Cycle grip examples']):
+            hand.cycleGrips()
+        elif (mode in ['5', 'Exit', 'exit']):
+            program_run = False
+        else:
+            print("Incorrect input, please enter the number associated with your choice.")
+    
+
     
