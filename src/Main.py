@@ -84,9 +84,9 @@ class Hand():
         else:
             pi.set_servo_pulsewidth(finger, 1000)   # Uniwnds the servo by one full rotation
             time.sleep(servo_delay)
-            pi.set_servo_pulsewidth(finger, 0)
             pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
             time.sleep(servo_delay)
+            pi.set_servo_pulsewidth(finger, 0)
             print(finger, "relaxed")
             
     def changeGrip(self, grip):
