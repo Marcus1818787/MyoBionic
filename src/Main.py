@@ -146,14 +146,9 @@ def EMG_Entry(hand):
     model = joblib.load('../TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model used
 
     def pred_emg(emg, moving, times=[]):
-        print("emg:",emg)
-        print("emg as array:",np.asarray(emg))
         np_emg = np.asarray(emg).reshape(1, -1)
-        print("array reshaped:", np_emg)
         grip = model.predict(np_emg)    # Classify EMG signals according to ML model
-        print("EMG classified")
         values.append(str(grip))        # Add this classification to the list to calculate mode later
-        print("Value added")
 
     m.add_emg_handler(pred_emg)
     m.connect()
@@ -168,26 +163,16 @@ def EMG_Entry(hand):
     values = [] # This list will store classified EMG signals to register grip held by user
     try:
         start_time = time.time()
-        print("Start time set")
         while True:
-            print("loop started")
             pdb.set_trace()
             m.run()
-            print("Myo running")
             if ((time.time() - start_time) > 2):
-                print("2 seconds passed")
                 if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
-                    print("new grip found")
                     new_grip = int(max(set(values), key=values.count)[1])   # Set the most common grip as the new grip
-                    print("new grip set")
                     hand.changeGrip(new_grip)   # Move the servos to replicate the new grip
-                    print("grip changed")
                     values.clear()  # Clear the list to start collecting grip values again
-                    print("values cleared")
                 start_time = time.time()    # Reset 2 second counter
-                print("2 seconds reset")
     except KeyboardInterrupt:
-        print("keyboard interrupt")
         m.disconnect()
 
 if __name__ == '__main__':
