@@ -5,6 +5,7 @@ except ModuleNotFoundError:
 #from gpiozero import Servo
 import multiprocessing
 from operator import mod
+from select import select
 import pigpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
@@ -100,7 +101,7 @@ class Hand():
                 self.current_state[i] = self.grip_pattern[grip][i]
                 print("Servo state changed")
             else:
-                print("Servo not moved")        
+                print("Servo not moved")
 
     def testServos(self):
         # This for loop will contract, pause, then relax each finger
@@ -114,13 +115,17 @@ class Hand():
             self.changeGrip(grip)
             time.sleep(4)
 
+    def stopHand(self):
+        for servo in self.finger_servo:
+            finger = self.finger_servo[servo]
+            pi.set_servo_pulsewidth(finger, 0)
+
 
 def Manual_Entry(hand):
     entry = ''
     available_grips = [str(i) for i in hand.grip_pattern]
     while entry not in ['q','Q']:
         switch_state = GPIO.input(input_switch)
-        print(switch_state)
         if switch_state == 1:
             entry = input("Enter a number between 0 & 6, enter q to quit: ")
             if entry == 'q':
@@ -129,6 +134,7 @@ def Manual_Entry(hand):
                 print("Incorrect input, try again")
             else:
                 hand.changeGrip(int(entry))
+                hand.stopHand()
         else:
             print("Switch is off, ignoring inputs for 2 seconds...")
             time.sleep(2)
