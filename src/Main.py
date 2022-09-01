@@ -175,7 +175,7 @@ if __name__ == '__main__':
     while program_run:
         print("Enter the number of the routine you want to run:\n1. Manual keyboard input\n"
         "2. EMG input\n3. Test servos\n4. Cycle grip examples\n5. Exit program")
-        mode = input("Enter an input option (1 or 2): ")
+        mode = input("Enter an input option: ")
         if (mode in ['1', 'Manual', 'manual', 'keyboard', 'Keyboard']):
             Manual_Entry(hand)
         elif (mode in ['2', 'EMG', 'emg']):
