@@ -145,8 +145,10 @@ def EMG_Entry(hand):
     model = joblib.load('../TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model used
 
     def pred_emg(emg, moving, times=[]):
+        print("emg:",emg)
+        print("emg as array:",np.asarray(emg))
         np_emg = np.asarray(emg).reshape(1, -1)
-        print("array reshaped")
+        print("array reshaped:", np_emg)
         grip = model.predict(np_emg)    # Classify EMG signals according to ML model
         print("EMG classified")
         values.append(str(grip))        # Add this classification to the list to calculate mode later
