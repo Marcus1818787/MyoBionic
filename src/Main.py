@@ -20,7 +20,7 @@ index = 20
 middle = 16
 ring_little = 12
 servo_delay = 0.7
-threshold = 400
+threshold = 350
 
 # Initiate variables for the ADC
 CLK = 4
@@ -156,6 +156,7 @@ def EMG_Entry(hand):
 
 if __name__ == '__main__':
     hand = Hand()
+    hand.
     program_run = True
     while program_run:
         print("Enter the number of the routine you want to run:\n1. Manual keyboard input\n"
