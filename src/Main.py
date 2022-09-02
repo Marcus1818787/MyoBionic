@@ -154,8 +154,8 @@ def EMG_Entry(hand):
         print("m running")
         if ((time.time() - start_time) > 2):
             print("two seconds lapped")
-            m.disconnect()
             if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
+                m.disconnect()
                 print("new grip found")
                 new_grip = int(max(set(values), key=values.count)[1])   # Set the most common grip as the new grip
                 print("new grip set")
@@ -163,9 +163,9 @@ def EMG_Entry(hand):
                 print("grip changed")
                 values.clear()  # Clear the list to start collecting grip values again
                 print("value cleared")
+                m.connect()
             start_time = time.time()    # Reset 2 second counter
             print("timer reset")
-            m.connect()
 
 if __name__ == '__main__':
     hand = Hand()
