@@ -59,8 +59,7 @@ if __name__ == '__main__':
 	# Vibrate to know we connected okay
 	m.vibrate(1)
 
-	data_worker(mode, seconds)
-	print("first read done")
-	time.sleep(3)
-	data_worker(mode, seconds)
-	print("second read done")
+	while True:
+		data_worker(mode, seconds)
+		print("next read done")
+		time.sleep(3)

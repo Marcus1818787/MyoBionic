@@ -149,7 +149,9 @@ def EMG_Entry(hand):
     myo_data = [] # This list will store classified EMG signals to register grip held by user
 
     while True:
+        print("Reading")
         EMG_collector(m, myo_data, emg_sample_time)
+        print("Read done")
         if (myo_data.count(max(set(myo_data), key=myo_data.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
             new_grip = int(max(set(myo_data), key=myo_data.count)[1])   # Set the most common grip as the new grip
             print(new_grip)
