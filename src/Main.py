@@ -153,7 +153,7 @@ def EMG_Entry(hand):
             if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
                 #m.disconnect()
                 new_grip = int(max(set(values), key=values.count)[1])   # Set the most common grip as the new grip
-                proc = Process(target=hand.changeGrip, args=new_grip)
+                proc = Process(target=hand.changeGrip, args=(new_grip,))
                 proc.start()   # Move the servos to replicate the new grip
                 print("grip changed")
                 values.clear()  # Clear the list to start collecting grip values again
