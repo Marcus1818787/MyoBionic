@@ -1,0 +1,64 @@
+# Simplistic data recording
+import sys
+sys.path.append('../src/Libs')
+import time
+import multiprocessing
+import pandas as pd
+from pyomyo import Myo, emg_mode
+import joblib
+import numpy as np
+
+
+def data_worker(mode, seconds):
+	collect = True
+
+	print("Data Worker started to collect")
+	# Start collecing data.
+	start_time = time.time()
+
+	while collect:
+		if (time.time() - start_time < seconds):
+			m.run()
+		else:
+			collect = False
+			collection_time = time.time() - start_time
+			print("Finished collecting.")
+			print(f"Collection time: {collection_time}")
+			print(len(myo_data), "frames collected")
+
+			# Add columns and save to df
+			print(myo_data)
+
+# -------- Main Program Loop -----------
+if __name__ == '__main__':
+	seconds = 2
+	mode = emg_mode.PREPROCESSED
+	model = joblib.load('src\TrainedModels\MarcusSVM30.sav')
+
+	# ------------ Myo Setup ---------------
+	m = Myo(mode=mode)
+	m.connect()
+
+	myo_data = []
+
+	def add_to_queue(emg, movement):
+		np_emg = np.asarray(emg).reshape(1, -1)
+		grip = model.predict(np_emg)    # Classify EMG signals according to ML model
+		myo_data.append(str(grip))        # Add this classification to the list to calculate mode later
+
+	m.add_emg_handler(add_to_queue)
+
+	def print_battery(bat):
+		print("Battery level:", bat)
+
+	m.add_battery_handler(print_battery)
+
+	 # Its go time
+	m.set_leds([0, 128, 0], [0, 128, 0])
+	# Vibrate to know we connected okay
+	m.vibrate(1)
+	
+	data_worker(mode, seconds)
+	print("first read done")
+	data_worker(mode, seconds)
+	print("second read done")

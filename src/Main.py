@@ -36,6 +36,10 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(input_switch, GPIO.IN)
 
+# Initiate ML variables
+model = joblib.load('TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model used
+emg_sample_time = 2
+
 
 class Hand():
     def __init__(self):
@@ -129,12 +133,11 @@ def Manual_Entry(hand):
 
 def EMG_Entry(hand):
     m = Myo(mode=emg_mode.PREPROCESSED)
-    model = joblib.load('TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model used
 
     def pred_emg(emg, moving, times=[]):
         np_emg = np.asarray(emg).reshape(1, -1)
         grip = model.predict(np_emg)    # Classify EMG signals according to ML model
-        values.append(str(grip))        # Add this classification to the list to calculate mode later
+        myo_data.append(str(grip))        # Add this classification to the list to calculate mode later
 
     m.add_emg_handler(pred_emg)
     m.connect()
@@ -145,19 +148,31 @@ def EMG_Entry(hand):
     m.set_leds([128, 128, 255], [128, 128, 255])  # purple logo and bar LEDs
     m.vibrate(1)
 
-    values = [] # This list will store classified EMG signals to register grip held by user
-    start_time = time.time()
+    myo_data = [] # This list will store classified EMG signals to register grip held by user
+
     while True:
-        m.run()
-        if ((time.time() - start_time) > 2):
-            if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
-                m.disconnect()
-                new_grip = int(max(set(values), key=values.count)[1])   # Set the most common grip as the new grip
-                print(new_grip)
-                hand.changeGrip(new_grip,)   # Move the servos to replicate the new grip
-                values.clear()  # Clear the list to start collecting grip values again
-                m.connect()
-            start_time = time.time()    # Reset 2 second counter
+        EMG_collector(m, myo_data, emg_sample_time)
+        if (myo_data.count(max(set(myo_data), key=myo_data.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
+            new_grip = int(max(set(myo_data), key=myo_data.count)[1])   # Set the most common grip as the new grip
+            print(new_grip)
+            hand.changeGrip(new_grip,)   # Move the servos to replicate the new grip
+            myo_data.clear()  # Clear the list to start collecting grip values again
+
+
+def EMG_collector(myo, myo_data, seconds):
+    collect = True
+	# Start timer.
+    start_time = time.time()
+    
+    while collect:
+        if (time.time() - start_time < seconds):
+            myo.run()
+        else:
+            collect = False
+            print(len(myo_data), "frames collected")
+			# Add columns and save to df
+			#print(myo_data)
+
 
 if __name__ == '__main__':
     hand = Hand()
