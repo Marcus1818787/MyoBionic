@@ -48,8 +48,8 @@ class Hand():
         # current_state indexes whether each servo is relaxed(0) or contracted(1)
         self.current_state = {0:0, 1:0, 2:0, 3:0}
         # grip_pattern indexes the state of each servo (ascending order) required to achieve grip patterns
-        self.grip_pattern = {0:[1,1,1,1], 1:[1,1,1,0], 2:[1,1,0,1],
-                             3:[1,0,0,1], 4:[0,0,1,1], 5:[0,0,0,1], 6:[0,0,0,0]}
+        self.grip_pattern = {0:[1,1,1,1], 1:[0,1,1,1], 2:[1,0,1,1],
+                             3:[1,0,0,1], 4:[1,1,0,0], 5:[1,0,0,0], 6:[0,0,0,0]}
 
         # Attempt to establish if any of the servos are contracted based off values the last time the hand was on
         boot_state = open("current_state.txt", 'r')
