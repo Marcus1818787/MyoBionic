@@ -39,7 +39,7 @@ if __name__ == '__main__':
 	seconds = 2
 	myo_data = []
 	mode = emg_mode.PREPROCESSED
-	model = joblib.load('src\TrainedModels\MarcusSVM30.sav')
+	model = joblib.load('MarcusSVM30.sav')
 
 	# ------------ Myo Setup ---------------
 	m = Myo(mode=mode)
