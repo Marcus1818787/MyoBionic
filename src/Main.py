@@ -133,13 +133,13 @@ def Manual_Entry(hand):
 
 
 def EMG_Entry(hand):
-    m = Myo(mode=emg_mode.PREPROCESSED)
-
+    
     def pred_emg(emg, movement):
         np_emg = np.asarray(emg).reshape(1, -1)
         grip = model.predict(np_emg)    # Classify EMG signals according to ML model
         myo_data.append(str(grip))        # Add this classification to the list to calculate mode later
 
+    m = Myo(mode=emg_mode.PREPROCESSED)
     m.connect()
     m.add_emg_handler(pred_emg)
 

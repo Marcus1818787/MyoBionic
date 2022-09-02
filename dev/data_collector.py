@@ -32,27 +32,21 @@ def data_worker(mode, seconds):
 
 # -------- Main Program Loop -----------
 if __name__ == '__main__':
+	
+	def add_to_queue(emg, movement):
+		np_emg = np.asarray(emg).reshape(1, -1)
+		grip = model.predict(np_emg)    # Classify EMG signals according to ML model
+		myo_data.append(str(grip))        # Add this classification to the list to calculate mode later
+	
 	seconds = 2
+	myo_data = []
 	mode = emg_mode.PREPROCESSED
 	model = joblib.load('src\TrainedModels\MarcusSVM30.sav')
 
 	# ------------ Myo Setup ---------------
 	m = Myo(mode=mode)
 	m.connect()
-
-	myo_data = []
-
-	def add_to_queue(emg, movement):
-		np_emg = np.asarray(emg).reshape(1, -1)
-		grip = model.predict(np_emg)    # Classify EMG signals according to ML model
-		myo_data.append(str(grip))        # Add this classification to the list to calculate mode later
-
 	m.add_emg_handler(add_to_queue)
-
-	def print_battery(bat):
-		print("Battery level:", bat)
-
-	m.add_battery_handler(print_battery)
 
 	 # Its go time
 	m.set_leds([0, 128, 0], [0, 128, 0])
