@@ -146,19 +146,22 @@ def EMG_Entry(hand):
 
     values = [] # This list will store classified EMG signals to register grip held by user
     start_time = time.time()
+    proc = Process(target=m.run)
+    proc.start()
     while True:
-        m.run()
+        #m.run()
         if ((time.time() - start_time) > 2):
             print("two seconds lapped")
             if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
                 #m.disconnect()
+                proc.terminate()
+                proc.join()
                 new_grip = int(max(set(values), key=values.count)[1])   # Set the most common grip as the new grip
-                proc = Process(target=hand.changeGrip, args=(new_grip,))
-                proc.start()   # Move the servos to replicate the new grip
+                hand.changeGrip(new_grip,)   # Move the servos to replicate the new grip
                 print("grip changed")
                 values.clear()  # Clear the list to start collecting grip values again
                 print("values cleared")
-                proc.join()
+                proc.start()
                 #m.connect()
             start_time = time.time()    # Reset 2 second counter
             print("timer reset")
