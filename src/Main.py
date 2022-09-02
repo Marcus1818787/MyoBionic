@@ -74,6 +74,7 @@ class Hand():
                 #   then reference the key with the same index. This relies on the pinout being correct (servo1-4 = channel0-3)
                 resistor_channel = list(self.finger_servo.keys())[list(self.finger_servo.values()).index(finger)]
                 resistor_value = mcp.read_adc(resistor_channel)
+                print(resistor_value)
                 if (resistor_value > threshold) and ((time.time()-rush_current_timer) > 0.5):  # The servo is straining against something, it should stop
                     pi.set_servo_pulsewidth(finger, 0)
                     time.sleep(servo_delay)
