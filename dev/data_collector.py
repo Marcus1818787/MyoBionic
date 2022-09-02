@@ -2,8 +2,6 @@
 import sys
 sys.path.append('../src/Libs')
 import time
-import multiprocessing
-import pandas as pd
 from pyomyo import Myo, emg_mode
 import joblib
 import numpy as np
@@ -32,7 +30,7 @@ def data_worker(mode, seconds):
 
 # -------- Main Program Loop -----------
 if __name__ == '__main__':
-	
+
 	def add_to_queue(emg, movement):
 		np_emg = np.asarray(emg).reshape(1, -1)
 		grip = model.predict(np_emg)    # Classify EMG signals according to ML model
