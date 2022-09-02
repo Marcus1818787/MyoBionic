@@ -28,6 +28,7 @@ def data_worker(mode, seconds):
 
 			# Add columns and save to df
 			print(myo_data)
+			myo_data.clear()
 
 # -------- Main Program Loop -----------
 if __name__ == '__main__':
@@ -57,8 +58,9 @@ if __name__ == '__main__':
 	m.set_leds([0, 128, 0], [0, 128, 0])
 	# Vibrate to know we connected okay
 	m.vibrate(1)
-	
+
 	data_worker(mode, seconds)
 	print("first read done")
+	time.sleep(3)
 	data_worker(mode, seconds)
 	print("second read done")

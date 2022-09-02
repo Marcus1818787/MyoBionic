@@ -135,17 +135,14 @@ def Manual_Entry(hand):
 def EMG_Entry(hand):
     m = Myo(mode=emg_mode.PREPROCESSED)
 
-    def pred_emg(emg, moving, times=[]):
+    def pred_emg(emg, movement):
         np_emg = np.asarray(emg).reshape(1, -1)
         grip = model.predict(np_emg)    # Classify EMG signals according to ML model
         myo_data.append(str(grip))        # Add this classification to the list to calculate mode later
 
-    m.add_emg_handler(pred_emg)
     m.connect()
+    m.add_emg_handler(pred_emg)
 
-    m.add_arm_handler(lambda arm, xdir: print('arm', arm, 'xdir', xdir))
-    m.add_pose_handler(lambda p: print('pose', p))
-    m.sleep_mode(1)
     m.set_leds([128, 128, 255], [128, 128, 255])  # purple logo and bar LEDs
     m.vibrate(1)
 
