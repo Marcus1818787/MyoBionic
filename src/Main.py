@@ -156,7 +156,6 @@ def EMG_Entry(hand):
 
 if __name__ == '__main__':
     hand = Hand()
-    hand.
     program_run = True
     while program_run:
         print("Enter the number of the routine you want to run:\n1. Manual keyboard input\n"
