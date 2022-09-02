@@ -135,6 +135,10 @@ def EMG_Entry(hand):
         grip = model.predict(np_emg)    # Classify EMG signals according to ML model
         values.append(str(grip))        # Add this classification to the list to calculate mode later
 
+    def worker():
+        while True:
+            m.run()
+
     m.add_emg_handler(pred_emg)
     m.connect()
 
@@ -146,11 +150,11 @@ def EMG_Entry(hand):
 
     values = [] # This list will store classified EMG signals to register grip held by user
     start_time = time.time()
-    proc = Process(target=m.run)
-    #proc.start()
+    proc = Process(target=worker)
+    proc.start()
     while True:
         #m.run()
-        proc.start()
+        #proc.start()
         if ((time.time() - start_time) > 2):
             print("two seconds lapped")
             if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
