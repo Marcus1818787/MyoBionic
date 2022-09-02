@@ -44,7 +44,7 @@ emg_sample_time = 2
 class Hand():
     def __init__(self):
         # finger_servo indexes each servo to a number
-        self.finger_servo = {0:ring_little, 1:middle, 2:index, 3:thumb}
+        self.finger_servo = {0:thumb, 1:index, 2:middle, 3:ring_little}
         # current_state indexes whether each servo is relaxed(0) or contracted(1)
         self.current_state = {0:0, 1:0, 2:0, 3:0}
         # grip_pattern indexes the state of each servo (ascending order) required to achieve grip patterns
@@ -94,7 +94,7 @@ class Hand():
     def changeGrip(self, grip):
         # Checks each servos current state against the state needed to achieve grip
         # If the state is different, the servo moves to the required state
-        for i in range(4):
+        for i in range(3,-1,-1):
             if self.current_state[i] != self.grip_pattern[grip][i]:
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
                 self.current_state[i] = self.grip_pattern[grip][i]
