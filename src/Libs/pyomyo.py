@@ -124,8 +124,6 @@ class BT(object):
 			c = self.ser.read()
 			if not c:
 				return None
-			else:
-				print(c)
 
 			ret = self.proc_byte(ord(c))
 			if ret:
