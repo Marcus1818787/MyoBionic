@@ -11,6 +11,7 @@ from Libs.pyomyo import Myo, emg_mode
 import time
 import joblib
 import numpy as np
+from multiprocessing import Process
 
 pi = pigpio.pi()
 
@@ -150,13 +151,15 @@ def EMG_Entry(hand):
         if ((time.time() - start_time) > 2):
             print("two seconds lapped")
             if (values.count(max(set(values), key=values.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
-                m.disconnect()
+                #m.disconnect()
                 new_grip = int(max(set(values), key=values.count)[1])   # Set the most common grip as the new grip
-                hand.changeGrip(new_grip)   # Move the servos to replicate the new grip
+                proc = Process(target=hand.changeGrip, args=new_grip)
+                proc.start()   # Move the servos to replicate the new grip
                 print("grip changed")
                 values.clear()  # Clear the list to start collecting grip values again
                 print("values cleared")
-                m.connect()
+                proc.join()
+                #m.connect()
             start_time = time.time()    # Reset 2 second counter
             print("timer reset")
 
