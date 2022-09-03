@@ -10,8 +10,8 @@ from Libs.pyomyo import Myo, emg_mode
 
 import time
 import joblib
-import numpy as np
-from multiprocessing import Process
+import numpy
+import multiprocessing
 
 pi = pigpio.pi()
 
@@ -37,8 +37,9 @@ GPIO.setwarnings(False)
 GPIO.setup(input_switch, GPIO.IN)
 
 # Initiate ML variables
-model = joblib.load('TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model used
-emg_sample_time = 2
+myo_q = multiprocessing.Queue()
+myo_data = []
+model = joblib.load('src\TrainedModels\MarcusSVM30.sav')    # Change this file path to change the ML model usedemg_sample_time = 2
 
 
 class Hand():
@@ -133,47 +134,49 @@ def Manual_Entry(hand):
 
 
 def EMG_Entry(hand):
-    
-    def pred_emg(emg, movement):
-        np_emg = np.asarray(emg).reshape(1, -1)
-        grip = model.predict(np_emg)    # Classify EMG signals according to ML model
-        myo_data.append(str(grip))        # Add this classification to the list to calculate mode later
-
-    m = Myo(mode=emg_mode.PREPROCESSED)
-    m.connect()
-    m.add_emg_handler(pred_emg)
-
-    m.set_leds([128, 128, 255], [128, 128, 255])  # purple logo and bar LEDs
-    m.vibrate(1)
-
-    myo_data = [] # This list will store classified EMG signals to register grip held by user
+    connected = multiprocessing.Value('i', 0)
+    p = multiprocessing.Process(target=EMG_collector, args=(myo_q, connected,))
+    p.start()
+    start_time = time.time()
 
     while True:
-        print("Reading")
-        EMG_collector(m, myo_data, emg_sample_time)
-        print("Read done")
-        if (myo_data.count(max(set(myo_data), key=myo_data.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
-            new_grip = int(max(set(myo_data), key=myo_data.count)[1])   # Set the most common grip as the new grip
-            print(new_grip)
-            hand.changeGrip(new_grip,)   # Move the servos to replicate the new grip
+        if (connected.value == 1) and (time.time() - start_time > 2):
+            while not(myo_q.empty()):
+                emg = list(myo_q.get()) # Empty the queue into myo_data list
+                myo_data.append(emg[0])
+            if (len(myo_data) != 0) and (myo_data.count(max(set(myo_data), key=myo_data.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
+                new_grip = (max(set(myo_data), key=myo_data.count))   # Set the most common grip as the new grip
+                print(new_grip)
+                hand.changeGrip(new_grip,)   # Move the servos to replicate the new grip
             myo_data.clear()  # Clear the list to start collecting grip values again
+            start_time = time.time()
 
 
-def EMG_collector(myo, myo_data, seconds):
-    collect = True
-	# Start timer.
-    start_time = time.time()
-    
-    while collect:
-        if (time.time() - start_time < seconds):
-            myo.run()
-        else:
-            collect = False
-            print(len(myo_data), "frames collected")
-			# Add columns and save to df
-			#print(myo_data)
+def EMG_collector(myo_q, connected):
+    m = Myo(mode=emg_mode.PREPROCESSED)
+    m.connect()
+	
+    def add_to_queue(emg, movement):
+        np_emg = numpy.asarray(emg).reshape(1, -1)
+        grip = model.predict(np_emg)    # Classify EMG signals according to ML model
+        myo_q.put(grip)        # Add this classification to the list to calculate mode later
+
+    m.add_emg_handler(add_to_queue)
+
+	 # Orange logo and bar LEDs
+    m.set_leds([128, 0, 0], [128, 0, 0])
+	# Vibrate to know we connected okay
+    m.vibrate(1)
+    connected.value = 1
+    print("connected")
+	
+    # worker function
+    while True:
+	    m.run()
+    print("Worker Stopped")
 
 
+# Main Program
 if __name__ == '__main__':
     hand = Hand()
     program_run = True
