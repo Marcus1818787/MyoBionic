@@ -9,7 +9,7 @@ import numpy as np
 
 MODE = emg_mode.PREPROCESSED
 q = multiprocessing.Queue()
-model = joblib.load('dev\MarcusSVM30.sav')
+model = joblib.load('MarcusSVM30.sav')
 
 
 def worker(q):
