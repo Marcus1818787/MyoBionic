@@ -8,7 +8,7 @@ from pyomyo import Myo, emg_mode
 
 if __name__ == '__main__':
     m = Myo(mode=emg_mode.PREPROCESSED)
-    model = joblib.load('../TrainedModels/MarcusSVM30.sav')
+    model = joblib.load('MarcusSVM30.sav')
 
     def pred_emg(emg, moving, times=[]):
         np_emg = np.asarray(emg).reshape(1, -1)
