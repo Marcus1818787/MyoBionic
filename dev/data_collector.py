@@ -1,4 +1,5 @@
 # Simplistic data recording
+import multiprocessing
 import sys
 sys.path.append('../src/Libs')
 import time
@@ -6,52 +7,42 @@ from pyomyo import Myo, emg_mode
 import joblib
 import numpy as np
 
+MODE = emg_mode.PREPROCESSED
+q = multiprocessing.Queue()
+model = joblib.load('dev\MarcusSVM30.sav')
 
-def data_worker(mode, seconds):
-	collect = True
 
-	print("Data Worker started to collect")
-	# Start collecing data.
-	start_time = time.time()
-
-	while collect:
-		if (time.time() - start_time < seconds):
-			m.run()
-		else:
-			collect = False
-			collection_time = time.time() - start_time
-			print("Finished collecting.")
-			print(f"Collection time: {collection_time}")
-			print(len(myo_data), "frames collected")
-
-			# Add columns and save to df
-			print(myo_data)
-			myo_data.clear()
-
-# -------- Main Program Loop -----------
-if __name__ == '__main__':
+def worker(q):
+	m = Myo(mode=MODE)
+	m.connect()
+	#print(f"Connected to Myo using {MODE}.")
 
 	def add_to_queue(emg, movement):
 		np_emg = np.asarray(emg).reshape(1, -1)
 		grip = model.predict(np_emg)    # Classify EMG signals according to ML model
-		myo_data.append(str(grip))        # Add this classification to the list to calculate mode later
-	
-	seconds = 2
-	myo_data = []
-	mode = emg_mode.PREPROCESSED
-	model = joblib.load('MarcusSVM30.sav')
+		q.put(str(grip))
 
-	# ------------ Myo Setup ---------------
-	m = Myo(mode=mode)
-	m.connect()
 	m.add_emg_handler(add_to_queue)
-
-	 # Its go time
-	m.set_leds([0, 128, 0], [0, 128, 0])
-	# Vibrate to know we connected okay
-	m.vibrate(1)
+	start_time = time.time()
+	data = []
 
 	while True:
-		data_worker(mode, seconds)
-		print("next read done")
-		time.sleep(3)
+		while (time.time() - start_time < 2):
+			m.run()
+		while not q.empty():
+			data.append(q.get())
+		print(data)
+		data.clear()
+		time.sleep(2)
+		start_time = time.time()
+
+
+# -------- Main Program Loop -----------
+if __name__ == '__main__':
+	p = multiprocessing.Process(target=worker, args=(q,))
+	try:
+		p.start()
+	except KeyboardInterrupt:
+		p.terminate()
+		p.join()
+		print("Done")
