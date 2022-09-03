@@ -21,7 +21,7 @@ index = 20
 middle = 16
 ring_little = 12
 servo_delay = 0.7
-threshold = 350
+threshold = 300
 
 # Initiate variables for the ADC
 CLK = 4
@@ -39,7 +39,7 @@ GPIO.setup(input_switch, GPIO.IN)
 # Initiate ML variables
 myo_q = multiprocessing.Queue()
 myo_data = []
-model = joblib.load('src\TrainedModels\MarcusSVM30.sav')    # Change this file path to change the ML model usedemg_sample_time = 2
+model = joblib.load('TrainedModels\MarcusSVM30.sav')    # Change this file path to change the ML model usedemg_sample_time = 2
 
 
 class Hand():
