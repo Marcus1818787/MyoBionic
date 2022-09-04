@@ -9,7 +9,7 @@ from pyomyo import Myo, emg_mode
 # ------------ Myo Setup ---------------
 myo_q = multiprocessing.Queue()
 myo_data = []
-model = joblib.load('dev\MarcusSVM30.sav')    # Change this file path to change the ML model used
+model = joblib.load('MarcusSVM30.sav')    # Change this file path to change the ML model used
 
 
 def worker(myo_q, connected):
