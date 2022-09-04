@@ -6,7 +6,7 @@ except ModuleNotFoundError:
 import pigpio
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
-from Libs.pyomyo import Myo, emg_mode
+from pyomyo import Myo, emg_mode
 
 import time
 import joblib
