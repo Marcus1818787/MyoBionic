@@ -16,22 +16,22 @@ import multiprocessing
 pi = pigpio.pi()
 
 # Initiate variables for servo control
-thumb = 21
-index = 20
-middle = 16
-ring_little = 12
+thumb = 28
+index = 26
+middle = 24
+ring_little = 22
 servo_delay = 0.7
 threshold = 300
 
 # Initiate variables for the ADC
-CLK = 4
-MISO = 17
-MOSI = 27
-CS = 22
+CLK = 40
+MISO = 38
+MOSI = 36
+CS = 32
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
 # Initiate variables for input switch
-input_switch = 18
+input_switch = 16
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(input_switch, GPIO.IN)
