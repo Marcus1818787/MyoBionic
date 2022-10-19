@@ -25,8 +25,8 @@ threshold = 300
 
 # Initiate variables for the ADC
 CLK = 21
-MISO = 20
-MOSI = 16
+MISO = 16
+MOSI = 20
 CS = 12
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
