@@ -16,7 +16,7 @@ import multiprocessing
 pi = pigpio.pi()
 
 # Initiate variables for servo control
-thumb = 1
+thumb = 25
 index = 7
 middle = 8
 ring_little = 25
@@ -95,7 +95,7 @@ class Hand():
     def changeGrip(self, grip):
         # Checks each servos current state against the state needed to achieve grip
         # If the state is different, the servo moves to the required state
-        for i in range(3,-1,-1):
+        for i in range(4):
             if self.current_state[i] != self.grip_pattern[grip][i]:
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
                 self.current_state[i] = self.grip_pattern[grip][i]
