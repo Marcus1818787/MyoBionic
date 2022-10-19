@@ -19,7 +19,7 @@ pi = pigpio.pi()
 thumb = 1
 index = 7
 middle = 8
-ring_little = 24
+ring_little = 25
 servo_delay = 0.7
 threshold = 300
 
