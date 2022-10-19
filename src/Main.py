@@ -16,10 +16,10 @@ import multiprocessing
 pi = pigpio.pi()
 
 # Initiate variables for servo control
-thumb = 25
-index = 8
-middle = 7
-ring_little = 1
+thumb = 1
+index = 7
+middle = 8
+ring_little = 25
 servo_delay = 0.7
 threshold = 300
 
