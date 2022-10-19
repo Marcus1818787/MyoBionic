@@ -9,3 +9,4 @@ sudo apt-get update
 sudo apt-get upgrade
 sudo pip install RPi.GPIO Adafruit_GPIO Adafruit_MCP3008 pyomyo pigpio
 sudo pigpiod
+git clone --branch main https://github.com/Marcus1818787/MyoBionic.git
