@@ -25,8 +25,8 @@ threshold = 300
 
 # Initiate variables for the ADC
 CLK = 21
-MISO = 16
-MOSI = 20
+MISO = 20
+MOSI = 16
 CS = 12
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
@@ -76,7 +76,7 @@ class Hand():
                 resistor_channel = list(self.finger_servo.keys())[list(self.finger_servo.values()).index(finger)]
                 resistor_value = mcp.read_adc(resistor_channel)
                 print(resistor_value)
-                if (resistor_value > threshold) and ((time.time()-rush_current_timer) > 0.5):  # The servo is straining against something, it should stop
+                if (resistor_value > threshold) and ((time.time()-rush_current_timer) > 1):  # The servo is straining against something, it should stop
                     pi.set_servo_pulsewidth(finger, 0)
                     time.sleep(servo_delay)
                     pi.set_servo_pulsewidth(finger, 1500)   # Set servo to default position
