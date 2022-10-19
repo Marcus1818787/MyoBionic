@@ -1,15 +1,17 @@
-from gpiozero import Servo
-from time import sleep
+import pigpio
+import RPi.GPIO
+import time
 
-servo = Servo(21)
+servo = 21
+pi = pigpio.pi()
 
 try:
     while True:
-        servo.min()
-        sleep(0.5)
-        servo.mid()
-        sleep(0.5)
-        servo.max()
-        sleep(0.5)
+        pi.set_servo_pulsewidth(servo, 2000)
+        time.sleep(0.5)
+        pi.set_servo_pulsewidth(servo, 0)
+        time.sleep(0.5)
+        pi.set_servo_pulsewidth(servo, 1500)
+        time.sleep(0.5)
 except KeyboardInterrupt:
 	print("Program stopped")
