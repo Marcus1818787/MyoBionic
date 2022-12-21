@@ -101,55 +101,6 @@ class Hand():
                 self.current_state[i] = self.grip_pattern[grip][i]
                 # This is where the servo state should be chnaged in the boot_state
 
-    def testServos(self):
-        # This for loop will contract, pause, then relax each finger
-        for finger in self.finger_servo:
-            self.moveFinger(self.finger_servo.get(finger), 1)
-            time.sleep(1)
-            self.moveFinger(self.finger_servo.get(finger), 0)
-
-    def cycleGrips(self):
-        for grip in self.grip_pattern:
-            self.changeGrip(grip)
-            time.sleep(4)
-
-
-def Manual_Entry(hand):
-    entry = ''
-    available_grips = [str(i) for i in hand.grip_pattern]
-    while entry not in ['q','Q']:
-        switch_state = GPIO.input(input_switch)
-        if switch_state == 0:
-            entry = input("Enter a number between 0 & 6, enter q to quit: ")
-            if entry == 'q':
-                pass
-            elif entry not in available_grips:
-                print("Incorrect input, try again")
-            else:
-                hand.changeGrip(int(entry))
-        else:
-            print("Switch is off, ignoring inputs for 2 seconds...")
-            time.sleep(2)
-
-
-def EMG_Entry(hand):
-    connected = multiprocessing.Value('i', 0)
-    p = multiprocessing.Process(target=EMG_collector, args=(myo_q, connected,))
-    p.start()
-    start_time = time.time()
-
-    while True:
-        if (connected.value == 1) and (time.time() - start_time > 2):
-            while not(myo_q.empty()):
-                emg = list(myo_q.get()) # Empty the queue into myo_data list
-                myo_data.append(emg[0])
-            if (len(myo_data) != 0) and (myo_data.count(max(set(myo_data), key=myo_data.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
-                new_grip = (max(set(myo_data), key=myo_data.count))   # Set the most common grip as the new grip
-                print(new_grip)
-                hand.changeGrip(new_grip,)   # Move the servos to replicate the new grip
-            myo_data.clear()  # Clear the list to start collecting grip values again
-            start_time = time.time()
-
 
 def EMG_collector(myo_q, connected):
     m = Myo(mode=emg_mode.PREPROCESSED)
@@ -180,19 +131,20 @@ if __name__ == '__main__':
     hand = Hand()
     program_run = True
     while program_run:
-        print("Enter the number of the routine you want to run:\n1. Manual keyboard input\n"
-        "2. EMG input\n3. Test servos\n4. Cycle grip examples\n5. Exit program")
-        mode = input("Enter an input option: ")
-        if (mode in ['1', 'Manual', 'manual', 'keyboard', 'Keyboard']):
-            Manual_Entry(hand)
-        elif (mode in ['2', 'EMG', 'emg']):
-            EMG_Entry(hand)
-        elif (mode in ['3', 'Test', 'test', 'Test servos', 'test servos']):
-            hand.testServos()
-        elif (mode in ['4', 'Cycle', 'cycle', 'Cycle grips', 'Cycle grip examples']):
-            hand.cycleGrips()
-        elif (mode in ['5', 'Exit', 'exit']):
-            program_run = False
-        else:
-            print("Incorrect input, please enter the number associated with your choice.")
+        connected = multiprocessing.Value('i', 0)
+        p = multiprocessing.Process(target=EMG_collector, args=(myo_q, connected,))
+        p.start()
+        start_time = time.time()
+
+        while True:
+            if (connected.value == 1) and (time.time() - start_time > 2):
+                while not(myo_q.empty()):
+                    emg = list(myo_q.get()) # Empty the queue into myo_data list
+                    myo_data.append(emg[0])
+                if (len(myo_data) != 0) and (myo_data.count(max(set(myo_data), key=myo_data.count)) > 90): # If the same grip has been recognised more than 90 times in 2 seconds
+                    new_grip = (max(set(myo_data), key=myo_data.count))   # Set the most common grip as the new grip
+                    print(new_grip)
+                    hand.changeGrip(new_grip,)   # Move the servos to replicate the new grip
+                myo_data.clear()  # Clear the list to start collecting grip values again
+                start_time = time.time()
     

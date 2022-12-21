@@ -1,10 +1,8 @@
 # Simplistic data recording
-import sys
-sys.path.append('../src/Libs')
 import time
 import multiprocessing
 import pandas as pd
-from Libs.pyomyo import Myo, emg_mode
+from pyomyo import Myo, emg_mode
 
 
 def data_worker(mode, seconds, filepath):
