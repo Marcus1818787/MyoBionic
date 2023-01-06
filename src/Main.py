@@ -16,18 +16,18 @@ import multiprocessing
 pi = pigpio.pi()
 
 # Initiate variables for servo control
-thumb = 24
-index = 7
-middle = 8
-ring_little = 25
+thumb = 26
+index = 19
+middle = 13
+ring_little = 6
 servo_delay = 0.7
 threshold = 300
 
 # Initiate variables for the ADC
-CLK = 21
-MISO = 20
-MOSI = 16
-CS = 12
+CLK = 12
+MISO = 7
+MOSI = 8
+CS = 25
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
 # Initiate variables for input switch
@@ -100,6 +100,18 @@ class Hand():
                 self.moveFinger(self.finger_servo[i], self.grip_pattern[grip][i])
                 self.current_state[i] = self.grip_pattern[grip][i]
                 # This is where the servo state should be chnaged in the boot_state
+        
+    def testServos(self):
+        # This for loop will contract, pause, then relax each finger
+        for finger in self.finger_servo:
+            self.moveFinger(self.finger_servo.get(finger), 1)
+            time.sleep(1)
+            self.moveFinger(self.finger_servo.get(finger), 0)
+
+    def cycleGrips(self):
+        for grip in self.grip_pattern:
+            self.changeGrip(grip)
+            time.sleep(4)
 
 
 def EMG_collector(myo_q, connected):
