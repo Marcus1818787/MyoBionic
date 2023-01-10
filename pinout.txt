@@ -1,17 +1,17 @@
 ADC OUTPUT:
-GPIO 4 = CLK
-GPIO 17 = MISO/Dout
-GPIO 27 = MOSI/Din
-GPIO 22 = CS/SHDN
+GPIO 12 = CLK
+GPIO 7 = MISO/Dout
+GPIO 8 = MOSI/Din
+GPIO 25 = CS/SHDN
 
 Servo 'Lock' Switch:
 GPIO 18 = SI - Terminal 2
 
 Servo Control:
-GPIO 12 = Servo 4 Signal
-GPIO 16 = Servo 3 Signal
-GPIO 20 = Servo 2 Signal
-GPIO 21 = Servo 1 Signal
+GPIO 6 = Servo 4 Signal
+GPIO 13 = Servo 3 Signal
+GPIO 19 = Servo 2 Signal
+GPIO 26 = Servo 1 Signal
 
 ADC INPUT:
 Servo 1 = Channel 1
