@@ -53,7 +53,7 @@ class Hand():
                              3:[1,0,0,1], 4:[1,1,0,0], 5:[1,0,0,0], 6:[0,0,0,0]}
 
         # Attempt to establish if any of the servos are contracted based off values the last time the hand was on
-        boot_state = open("current_state.txt", 'r')
+        boot_state = open("src/current_state.txt", 'r')
         for finger in self.current_state:
             servo_status = boot_state.readline()
             # Set current state of finger to the state declared in txt file
