@@ -39,7 +39,7 @@ GPIO.setup(input_switch, GPIO.IN)
 # Initiate ML variables
 myo_q = multiprocessing.Queue()
 myo_data = []
-model = joblib.load('./TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model usedemg_sample_time = 2
+model = joblib.load('src\TrainedModels\MarcusSVM30.sav')    # Change this file path to change the ML model usedemg_sample_time = 2
 
 
 class Hand():
