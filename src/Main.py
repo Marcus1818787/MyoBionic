@@ -39,7 +39,7 @@ GPIO.setup(input_switch, GPIO.IN)
 # Initiate ML variables
 myo_q = multiprocessing.Queue()
 myo_data = []
-model = joblib.load('src/TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model usedemg_sample_time = 2
+model = joblib.load('home/myo/MyoBionic/src/TrainedModels/MarcusSVM30.sav')    # Change this file path to change the ML model usedemg_sample_time = 2
 
 
 class Hand():
@@ -53,7 +53,7 @@ class Hand():
                              3:[1,0,0,1], 4:[1,1,0,0], 5:[1,0,0,0], 6:[0,0,0,0]}
 
         # Attempt to establish if any of the servos are contracted based off values the last time the hand was on
-        boot_state = open("src/current_state.txt", 'r')
+        boot_state = open("home/myo/MyoBionic/src/current_state.txt", 'r')
         for finger in self.current_state:
             servo_status = boot_state.readline()
             # Set current state of finger to the state declared in txt file
