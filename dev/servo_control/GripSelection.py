@@ -25,7 +25,6 @@ while entry not in ['q','Q']:
             print("Incorrect input, try again")
         else:
             hand.changeGrip(int(entry))
-            hand.stopHand()
     else:
         print("Switch is off, ignoring inputs for 2 seconds...")
         time.sleep(2)
