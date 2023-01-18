@@ -1,6 +1,6 @@
 import time
 import sys
-sys.path.append('../src/Libs')
+sys.path.append('/home/myo/MyoBionic/src/Libs')
 import joblib
 import numpy as np
 

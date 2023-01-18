@@ -1,6 +1,6 @@
 # Simplistic data recording
 import sys
-sys.path.append('../src/Libs')
+sys.path.append('/home/myo/MyoBionic/src/Libs')
 import time
 import multiprocessing
 import pandas as pd
