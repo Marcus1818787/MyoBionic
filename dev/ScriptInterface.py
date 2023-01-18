@@ -24,12 +24,12 @@ while entry not in ['q','Q']:
             if finger_select not in available_fingers:
                 print("Incorrect input, try again")
             else:
-                hand.moveFinger(int(finger_select), 1)
+                hand.moveFinger(hand.finger_servo.get(int(finger_select)), 1)
                 time.sleep(1)
-                hand.moveFinger(int(finger_select), 0)
+                hand.moveFinger(hand.finger_servo.get(int(finger_select)), 0)
     elif entry == '2':
         hand.testServos()
-        
+
     elif entry == '3':
         grip_select = ''
         available_grips = [str(i) for i in hand.grip_pattern]
