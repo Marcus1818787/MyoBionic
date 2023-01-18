@@ -5,6 +5,7 @@ try:
     import RPi.GPIO as GPIO
 except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
+import time
 
 input_switch = 23
 GPIO.setmode(GPIO.BCM)
