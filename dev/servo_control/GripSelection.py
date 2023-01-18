@@ -1,6 +1,15 @@
 import sys
 sys.path.append('/home/myo/MyoBionic/src')
 from Main import Hand
+try:
+    import RPi.GPIO as GPIO
+except ModuleNotFoundError:
+    from GPIOEmulator.EmulatorGUI import GPIO
+
+input_switch = 23
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(input_switch, GPIO.IN)
 
 entry = ''
 hand = Hand()
