@@ -6,7 +6,7 @@ import time
 entry = ''
 hand = Hand()
 while entry not in ['q','Q']:
-    print("Available dev scripts:\n"
+    print("\nAvailable dev scripts:\n"
     "1. Test single servo\n"
     "2. Test all servos\n"
     "3. Display single Grip\n"
