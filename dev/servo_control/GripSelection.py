@@ -7,7 +7,7 @@ except ModuleNotFoundError:
     from GPIOEmulator.EmulatorGUI import GPIO
 import time
 
-input_switch = 23
+input_switch = 18
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(input_switch, GPIO.IN)

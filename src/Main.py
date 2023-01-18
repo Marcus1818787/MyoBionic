@@ -31,7 +31,7 @@ CS = 25
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
 # Initiate variables for input switch
-input_switch = 23
+input_switch = 18
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(input_switch, GPIO.IN)
