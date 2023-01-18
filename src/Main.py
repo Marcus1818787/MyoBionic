@@ -21,7 +21,7 @@ index = 19
 middle = 13
 ring_little = 6
 servo_delay = 0.7
-threshold = 200
+threshold = 175
 
 # Initiate variables for the ADC
 CLK = 12
