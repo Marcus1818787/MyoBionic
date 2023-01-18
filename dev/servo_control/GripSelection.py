@@ -1,4 +1,4 @@
-from Main import Hand
+from ...src.Main import Hand
 
 entry = ''
 hand = Hand()
